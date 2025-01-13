@@ -71,12 +71,13 @@ async function run() {
     // get users
     app.get("/users/:mail", async (req, res) => {
       const email = req.params.mail;
-      //   console.log(email);
-      const cursor = bloodCallectionUser.find().filter({ mail: email });
-      //   console.log(cursor);
+        // console.log(email);
+      const cursor = bloodCallectionUser.find().filter({ email: email });
+        // console.log(cursor);
       const result = await cursor.toArray();
+      // console.log(result)
       res.send(result);
-      //   console.log(result);
+        // console.log(result);
     });
 
     // auth related api
