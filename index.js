@@ -65,14 +65,14 @@ async function run() {
     // );
 
     // database filed create
-    const lostFindCallection = client.db("lostAndFind").collection("users");
+    const bloodCallectionUser = client.db("bloodCallections").collection("users");
 
     // user related query
     // get users
     app.get("/users/:mail", async (req, res) => {
       const email = req.params.mail;
       //   console.log(email);
-      const cursor = lostFindCallection.find().filter({ mail: email });
+      const cursor = bloodCallectionUser.find().filter({ mail: email });
       //   console.log(cursor);
       const result = await cursor.toArray();
       res.send(result);
@@ -109,12 +109,12 @@ async function run() {
     app.post("/users", async (req, res) => {
       const newUser = req.body;
       // console.log(newUser);
-      const result = await lostFindCallection.insertOne(newUser);
+      const result = await bloodCallectionUser.insertOne(newUser);
       res.send(result);
     });
 
     // donation related work
-    const LostCalection = client.db("lostAndFind").collection("lostFindItems");
+    const BloodDonations = client.db("lostAndFind").collection("lostFindItems");
     // insert database
     app.post("/lostandfinds", async (req, res) => {
       const newlostandfinds = req.body;
@@ -356,9 +356,9 @@ run().catch(console.dir);
 
 //server run or not
 app.get("/", (req, res) => {
-  res.send("lost founds server is running");
+  res.send("Blood donations server is running");
 });
 
 app.listen(port, () => {
-  console.log(`lost founds server is running on port ${port}`);
+  console.log(`blood donations is running on port ${port}`);
 });
