@@ -186,8 +186,8 @@ async function run() {
           return res.status(400).send({ message: "Status is required" });
         }
 
-        console.log("User ID:", id);
-        console.log("Status:", status);
+        // console.log("User ID:", id);
+        // console.log("Status:", status);
 
         const result = await bloodCallectionUser.updateOne(
           { _id: new ObjectId(id) }, // Make sure ObjectId is imported correctly
@@ -206,6 +206,40 @@ async function run() {
         res.status(500).send({ message: "Failed to update status" });
       }
     });
+
+
+    // user Delete function
+    app.delete("/users/:id", async (req, res) => {
+      try {
+        const { id } = req.params;
+        const result = await usersCollection.deleteOne({
+          _id: new ObjectId(id),
+        });
+        res.send(result);
+      } catch (error) {
+        res.status(500).send({ message: "Failed to delete user" });
+      }
+    });
+
+    // update roles
+    app.put("/users/role/:id", async (req, res) => {
+      try {
+        const { id } = req.params;
+        const { role } = req.body;
+        const result = await bloodCallectionUser.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { role } }
+        );
+        res.send(result);
+      } catch (error) {
+        res.status(500).send({ message: "Failed to update role" });
+      }
+    });
+
+
+
+
+
 
 
 
