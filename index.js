@@ -65,19 +65,27 @@ async function run() {
     // );
 
     // database filed create
-    const bloodCallectionUser = client.db("bloodCallections").collection("users");
+    const bloodCallectionUser = client
+      .db("bloodCallections")
+      .collection("users");
 
     // user related query
     // get users
     app.get("/users/:mail", async (req, res) => {
-      const email = req.params.mail;
-        // console.log(email);
-      const cursor = bloodCallectionUser.find().filter({ email: email });
-        // console.log(cursor);
-      const result = await cursor.toArray();
-      // console.log(result)
-      res.send(result);
-        // console.log(result);
+      try {
+        const email = req.params.mail;
+
+        const result = await bloodCallectionUser.findOne({ email });
+
+        if (!result) {
+          return res.status(404).send({ message: "User not found" });
+        }
+
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        res.status(500).send({ message: "Internal server error" });
+      }
     });
 
     // auth related api
@@ -112,6 +120,42 @@ async function run() {
       // console.log(newUser);
       const result = await bloodCallectionUser.insertOne(newUser);
       res.send(result);
+    });
+
+    // user update
+    app.put("/users/update/:id", async (req, res) => {
+      const mail = req.params.id;
+      const updateData = req.body;
+
+      try {
+        const filter = { email: mail };
+        const updateDoc = {
+          $set: {
+            name: updateData.name,
+            photoUrl: updateData.photoUrl,
+            bloodGroup: updateData.bloodGroup,
+            district: updateData.district,
+            upazila: updateData.upazila,
+            lastDonation: updateData.lastDonation || null,
+          },
+        };
+
+        const result = await bloodCallectionUser.updateOne(filter, updateDoc);
+
+        if (result.matchedCount === 0) {
+          return res
+            .status(404)
+            .json({ message: "User not found or invalid ID" });
+        }
+
+        res.status(200).json({
+          message: "User profile updated successfully",
+          result,
+        });
+      } catch (error) {
+        console.error("Error updating user profile:", error);
+        res.status(500).json({ message: "Failed to update user profile" });
+      }
     });
 
     // donation related work
