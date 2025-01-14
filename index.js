@@ -212,7 +212,7 @@ async function run() {
     app.delete("/users/:id", async (req, res) => {
       try {
         const { id } = req.params;
-        const result = await usersCollection.deleteOne({
+        const result = await bloodCallectionUser.deleteOne({
           _id: new ObjectId(id),
         });
         res.send(result);
