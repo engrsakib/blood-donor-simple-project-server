@@ -158,6 +158,59 @@ async function run() {
       }
     });
 
+    // all users
+    app.get("/users", async (req, res) => {
+      try {
+        
+        const result = await bloodCallectionUser.find({}).toArray();
+
+        if (!result || result.length === 0) {
+          return res.status(404).send({ message: "No users found" });
+        }
+
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).send({ message: "Internal server error" });
+      }
+    });
+
+
+    // user statuts update
+    app.put("/users/status/:id", async (req, res) => {
+      try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        if (!status) {
+          return res.status(400).send({ message: "Status is required" });
+        }
+
+        console.log("User ID:", id);
+        console.log("Status:", status);
+
+        const result = await bloodCallectionUser.updateOne(
+          { _id: new ObjectId(id) }, // Make sure ObjectId is imported correctly
+          { $set: { status: status } } // Correctly set the status field
+        );
+
+        if (result.modifiedCount === 0) {
+          return res
+            .status(404)
+            .send({ message: "User not found or status is already the same" });
+        }
+
+        res.send(result);
+      } catch (error) {
+        console.error("Error updating status:", error);
+        res.status(500).send({ message: "Failed to update status" });
+      }
+    });
+
+
+
+
+
     // donation related work
     const BloodDonations = client.db("lostAndFind").collection("lostFindItems");
     // insert database
