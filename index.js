@@ -294,6 +294,22 @@ async function run() {
       }
     });
 
+    // donations delete
+    app.delete("/donations/:id", async (req, res) => {
+      try {
+        const { id } = req.params;
+        const result = await bloodCallectionDonation.deleteOne({
+          _id: new ObjectId(id),
+        });
+        if (result.deletedCount === 0) {
+          return res.status(404).send({ message: "Donation not found" });
+        }
+        res.status(200).send({ message: "Donation deleted successfully" });
+      } catch (error) {
+        res.status(500).send({ message: "Failed to delete donation" });
+      }
+    });
+
    
     // donations posts
     app.post("/donations", async (req, res) => {
