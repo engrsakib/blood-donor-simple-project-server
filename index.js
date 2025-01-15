@@ -236,28 +236,24 @@ async function run() {
       }
     });
 
-
     // donations related works
 
     // all data get
     app.get("/donations", async (req, res) => {
+      try {
+        const result = await bloodCallectionDonation.find({}).toArray();
 
-      
-        try {
-          const result = await bloodCallectionDonation.find({}).toArray();
-
-          if (!result || result.length === 0) {
-            return res.status(404).send({ message: "No data found" });
-          }
-
-          res.send(result);
-        } catch (error) {
-          console.error("Error fetching users:", error);
-          res.status(500).send({ message: "Internal server error" });
+        if (!result || result.length === 0) {
+          return res.status(404).send({ message: "No data found" });
         }
-      
+
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).send({ message: "Internal server error" });
+      }
     });
-   
+
     // user based data get
     app.get("/donations/:mail", async (req, res) => {
       try {
@@ -310,7 +306,67 @@ async function run() {
       }
     });
 
-   
+    // get onte by Id
+    app.get("/donations/edit/:id", async (req, res) => {
+      try {
+        const { id } = req.params;
+        const donation = await bloodCallectionDonation.findOne({
+          _id: new ObjectId(id),
+        });
+        if (!donation) {
+          return res.status(404).send({ message: "Donation not found" });
+        }
+        res.status(200).send(donation);
+      } catch (error) {
+        res.status(500).send({ message: "Failed to fetch donation details" });
+      }
+    });
+
+    // update backed code
+    app.put("/donations/edit/:id", async (req, res) => {
+      const { id } = req.params;
+      const updateData = req.body;
+
+      try {
+        const filter = { _id: new ObjectId(id) };
+
+        const updateDoc = {
+          $set: {
+            recipientName: updateData.recipientName,
+            district: updateData.district,
+            upazila: updateData.upazila,
+            hospital: updateData.hospital,
+            address: updateData.address,
+            bloodGroup: updateData.bloodGroup,
+            donationDate: updateData.donationDate,
+            donationTime: updateData.donationTime,
+            requestMessage: updateData.requestMessage,
+          },
+        };
+
+        const result = await bloodCallectionDonation.updateOne(
+          filter,
+          updateDoc
+        );
+
+        if (result.matchedCount === 0) {
+          return res
+            .status(404)
+            .json({ message: "Donation request not found or invalid ID" });
+        }
+
+        res.status(200).json({
+          message: "Donation request updated successfully",
+          result,
+        });
+      } catch (error) {
+        console.error("Error updating donation request:", error);
+        res
+          .status(500)
+          .json({ message: "Failed to update donation request", error });
+      }
+    });
+
     // donations posts
     app.post("/donations", async (req, res) => {
       const newData = req.body;
@@ -318,8 +374,6 @@ async function run() {
       const result = await bloodCallectionDonation.insertOne(newData);
       res.send(result);
     });
-
-
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
