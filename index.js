@@ -238,6 +238,64 @@ async function run() {
 
 
     // donations related works
+
+    // all data get
+    app.get("/donations", async (req, res) => {
+
+      
+        try {
+          const result = await bloodCallectionDonation.find({}).toArray();
+
+          if (!result || result.length === 0) {
+            return res.status(404).send({ message: "No data found" });
+          }
+
+          res.send(result);
+        } catch (error) {
+          console.error("Error fetching users:", error);
+          res.status(500).send({ message: "Internal server error" });
+        }
+      
+    });
+   
+    // user based data get
+    app.get("/donations/:mail", async (req, res) => {
+      try {
+        const email = req.params.mail;
+
+        // Find all documents related to the user email
+        const result = await bloodCallectionDonation.find({ email }).toArray();
+
+        if (!result || result.length === 0) {
+          return res
+            .status(404)
+            .send({ message: "No data found for this user" });
+        }
+
+        res.status(200).send(result);
+      } catch (error) {
+        console.error("Error fetching user donations:", error);
+        res.status(500).send({ message: "Internal server error" });
+      }
+    });
+
+    // donation status update
+    app.patch("/donations/:id", async (req, res) => {
+      try {
+        const { id } = req.params;
+        const { status } = req.body;
+        const result = await bloodCallectionDonation.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { status } }
+        );
+        res.status(200).send(result);
+      } catch (error) {
+        res.status(500).send({ message: "Failed to update donation status" });
+      }
+    });
+
+   
+    // donations posts
     app.post("/donations", async (req, res) => {
       const newData = req.body;
       // console.log(newUser);
