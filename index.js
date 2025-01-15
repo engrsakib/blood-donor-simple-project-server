@@ -68,6 +68,9 @@ async function run() {
     const bloodCallectionUser = client
       .db("bloodCallections")
       .collection("users");
+    const bloodCallectionDonation = client
+      .db("bloodCallections")
+      .collection("donations");
 
     // user related query
     // get users
@@ -161,7 +164,6 @@ async function run() {
     // all users
     app.get("/users", async (req, res) => {
       try {
-        
         const result = await bloodCallectionUser.find({}).toArray();
 
         if (!result || result.length === 0) {
@@ -174,7 +176,6 @@ async function run() {
         res.status(500).send({ message: "Internal server error" });
       }
     });
-
 
     // user statuts update
     app.put("/users/status/:id", async (req, res) => {
@@ -207,7 +208,6 @@ async function run() {
       }
     });
 
-
     // user Delete function
     app.delete("/users/:id", async (req, res) => {
       try {
@@ -237,248 +237,15 @@ async function run() {
     });
 
 
-
-
-
-
-
-
-
-
-    // donation related work
-    const BloodDonations = client.db("lostAndFind").collection("lostFindItems");
-    // insert database
-    app.post("/lostandfinds", async (req, res) => {
-      const newlostandfinds = req.body;
-      const result = await LostCalection.insertOne(newlostandfinds);
+    // donations related works
+    app.post("/donations", async (req, res) => {
+      const newData = req.body;
+      // console.log(newUser);
+      const result = await bloodCallectionDonation.insertOne(newData);
       res.send(result);
     });
 
-    // update database
-    app.put("/lostandfinds/:id", async (req, res) => {
-      const id = req.params.id; // Extract ID from request parameters
-      const recoveryData = req.body; // Get data from the request body
 
-      try {
-        // Update the document in the collection
-        const result = await LostCalection.updateOne(
-          { _id: new ObjectId(id) }, // Match by document ID
-          { $set: recoveryData } // Set updated data
-        );
-
-        if (result.modifiedCount === 1) {
-          res.send({
-            success: true,
-            message: "Recovery data updated successfully",
-          });
-        } else {
-          res.send({
-            success: false,
-            message: "No matching item found to update",
-          });
-        }
-      } catch (error) {
-        console.error("Error updating recovery data:", error);
-        res
-          .status(500)
-          .send({ success: false, message: "Failed to update recovery data" });
-      }
-    });
-
-    // get database
-    app.get("/lostandfinds", async (req, res) => {
-      const cursor = LostCalection.find();
-      const result = await cursor.toArray();
-      res.send(result);
-    });
-
-    // search
-    app.get("/lostandfinds/search/:search", async (req, res) => {
-      const search = req.params.search;
-
-      try {
-        const result = await LostCalection.find({
-          title: { $regex: search, $options: "i" },
-        }).toArray();
-
-        res.send(result);
-      } catch (error) {
-        console.error("Error fetching search results:", error);
-        res.status(500).send({ error: "Failed to fetch search results" });
-      }
-    });
-
-    // ascending sort
-    app.get("/lostandfinds/sorted", async (req, res) => {
-      try {
-        // Sorting by dateLost in ascending order
-        const result = await LostCalection.find()
-          .sort({ dateLost: -1 })
-          .toArray();
-        // console.log(result);
-        res.send(result);
-      } catch (error) {
-        console.error("Error while sorting by dateLost:", error);
-        res.status(500).send({ message: "Failed to fetch sorted data" });
-      }
-    });
-
-    app.get("/lostandfinds/sort", async (req, res) => {
-      try {
-        // Sorting by dateLost in ascending order
-        const result = await LostCalection.find()
-          .sort({ dateLost: -1 })
-          .limit(6)
-          .toArray();
-        // console.log(result);
-        res.send(result);
-      } catch (error) {
-        console.error("Error while sorting by dateLost:", error);
-        res.status(500).send({ message: "Failed to fetch sorted data" });
-      }
-    });
-
-    // sort by date and time
-
-    // const { ObjectId } = require("mongodb");
-    // const moment = require("moment-timezone");
-
-    // deatils data fetch
-    app.get("/lost-finds/:id", async (req, res) => {
-      const id = req.params.id;
-      const cursor = LostCalection.find().filter({ _id: new ObjectId(id) });
-      const result = await cursor.toArray();
-      res.send(result);
-    });
-
-    // my items get
-    app.get("/myitems/:mail", veryfyToken, async (req, res) => {
-      try {
-        const email = req.params.mail;
-        if (req.decoded.email != email) {
-          return res.status(403).send({ massage: "You are fake user" });
-        }
-        const result = await LostCalection.find({ mail: email }).toArray();
-        res.send(result);
-      } catch (error) {
-        console.log(error);
-      }
-    });
-    // delete current user camp
-    app.delete("/myitems/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-      const result = await LostCalection.deleteOne(query);
-      res.send(result);
-    });
-
-    // UPDATE MY CAMP
-    app.get("/itemsUpadte/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-
-      const result = await LostCalection.findOne(query);
-      res.send(result);
-    });
-
-    app.put("/itemsUpadte/:id", async (req, res) => {
-      const id = req.params.id;
-      // console.log(id);
-      const query = { _id: new ObjectId(id) };
-      const optional = { upsert: true };
-      const updated = req.body;
-      const updatedData = {
-        $set: {
-          dateLost: updated.dateLost,
-          title: updated.title,
-          photoURL: updated.photoURL,
-          type: updated.type,
-          categoryArray: updated.categoryArray,
-          lostlocation: updated.lostlocation,
-          description: updated.description,
-        },
-      };
-      const result = await LostCalection.updateOne(
-        query,
-        updatedData,
-        optional
-      );
-      res.send(result);
-    });
-
-    // recover item
-    // myMoney
-    const RecoveredCollection = client
-      .db("lostAndFind")
-      .collection("my_recover");
-
-    // get recover item
-    app.get("/recover/:id", async (req, res) => {
-      const id = req.params.id;
-      const cursor = RecoveredCollection.find().filter({
-        _id: new ObjectId(id),
-      });
-      const result = await cursor.toArray();
-      res.send(result);
-    });
-
-    // post recover item
-    app.post("/api/recovered-items", async (req, res) => {
-      const recoveryData = req.body;
-      try {
-        const result = await RecoveredCollection.insertOne(recoveryData);
-        res.status(200).send(result);
-      } catch (error) {
-        res
-          .status(500)
-          .send({ message: "Failed to save recovery data", error });
-      }
-    });
-
-    // pathc recover item
-    app.patch("/api/items/:id", async (req, res) => {
-      const { id } = req.params;
-      const { status } = req.body;
-
-      try {
-        const result = await ItemsCollection.updateOne(
-          { _id: new ObjectId(id) },
-          { $set: { status } }
-        );
-        res.status(200).send(result);
-      } catch (error) {
-        res
-          .status(500)
-          .send({ message: "Failed to update item status", error });
-      }
-    });
-
-    app.get("/api/recovered-item/:id", async (req, res) => {
-      const { id } = req.params; // Extract the `id` from request parameters
-      // console.log(id);
-
-      const result = await RecoveredCollection.findOne({ itemId: id });
-
-      res.send(result);
-    });
-
-    app.get("/myrecover/items/:mail", veryfyToken, async (req, res) => {
-      try {
-        const email = req.params.mail;
-        // console.log("object", req.cookies);
-        // console.log(req.user.email);
-        if (req.decoded.email != email) {
-          return res.status(403).send({ massage: "You are fake user" });
-        }
-        const result = await RecoveredCollection.find({
-          email: email,
-        }).toArray();
-        res.send(result);
-      } catch (error) {
-        console.error(error);
-        res.status(500).send({ error: "Internal Server Error" });
-      }
-    });
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
