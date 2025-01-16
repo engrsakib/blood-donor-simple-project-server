@@ -283,8 +283,8 @@ async function run() {
         // Find documents with "pending" status and matching email
         const result = await bloodCallectionDonation
           .find({ email, status: "pending" })
-          .sort({ createdAt: -1 }) // Sort by createdAt in descending order
-          .limit(3) // Limit to the latest 3 entries
+          .sort({ createdAt: 1 })  
+          .limit(3) 
           .toArray();
 
         if (!result || result.length === 0) {
@@ -299,6 +299,27 @@ async function run() {
         res.status(500).send({ message: "Internal server error" });
       }
     });
+   
+   
+   
+  //  all donations for home pages
+   app.get("/all-donations", async (req, res) => {
+     try {
+       const result = await bloodCallectionDonation
+         .find({ status: "pending" })
+         .toArray();
+
+       if (!result || result.length === 0) {
+         return res.status(404).send({ message: "No data found" });
+       }
+
+       res.send(result);
+     } catch (error) {
+       console.error("Error fetching users:", error);
+       res.status(500).send({ message: "Internal server error" });
+     }
+   });
+
 
 
 
