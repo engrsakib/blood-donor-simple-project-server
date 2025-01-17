@@ -470,6 +470,32 @@ async function run() {
     });
 
 
+    // blogs delete
+    app.delete("/blogs/:id", async (req, res) => {
+      try {
+        const { id } = req.params;
+
+        // Validate ObjectId
+        if (!ObjectId.isValid(id)) {
+          return res.status(400).send({ message: "Invalid ID format" });
+        }
+
+        // Delete the blog from the database
+        const result = await bloodCallectionBlogs.deleteOne({
+          _id: new ObjectId(id),
+        });
+
+        if (result.deletedCount === 0) {
+          return res.status(404).send({ message: "Blog not found" });
+        }
+
+        res.status(200).send({ message: "Blog deleted successfully" });
+      } catch (error) {
+        console.error("Error deleting blog:", error);
+        res.status(500).send({ message: "Failed to delete blog" });
+      }
+    });
+
     // blogs post
     app.post("/blogs", async (req, res) => {
       const newData = req.body;
