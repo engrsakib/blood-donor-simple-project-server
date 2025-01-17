@@ -71,6 +71,9 @@ async function run() {
     const bloodCallectionDonation = client
       .db("bloodCallections")
       .collection("donations");
+    const bloodCallectionBlogs = client
+      .db("bloodCallections")
+      .collection("blogs");
 
     // user related query
     // get users
@@ -424,6 +427,17 @@ async function run() {
       const result = await bloodCallectionDonation.insertOne(newData);
       res.send(result);
     });
+
+
+
+    // blogs post
+    app.post("/blogs", async (req, res) => {
+      const newData = req.body;
+      // console.log(newUser);
+      const result = await bloodCallectionBlogs.insertOne(newData);
+      res.send(result);
+    });
+
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
