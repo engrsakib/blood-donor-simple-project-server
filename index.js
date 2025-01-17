@@ -278,7 +278,6 @@ async function run() {
       }
     });
 
-    
     app.get("/donations/home/:mail", async (req, res) => {
       try {
         const email = req.params.mail;
@@ -286,8 +285,8 @@ async function run() {
         // Find documents with "pending" status and matching email
         const result = await bloodCallectionDonation
           .find({ email, status: "pending" })
-          .sort({ createdAt: 1 })  
-          .limit(3) 
+          .sort({ createdAt: 1 })
+          .limit(3)
           .toArray();
 
         if (!result || result.length === 0) {
@@ -302,31 +301,24 @@ async function run() {
         res.status(500).send({ message: "Internal server error" });
       }
     });
-   
-   
-   
-  //  all donations for home pages
-   app.get("/all-donations", async (req, res) => {
-     try {
-       const result = await bloodCallectionDonation
-         .find({ status: "pending" })
-         .toArray();
 
-       if (!result || result.length === 0) {
-         return res.status(404).send({ message: "No data found" });
-       }
+    //  all donations for home pages
+    app.get("/all-donations", async (req, res) => {
+      try {
+        const result = await bloodCallectionDonation
+          .find({ status: "pending" })
+          .toArray();
 
-       res.send(result);
-     } catch (error) {
-       console.error("Error fetching users:", error);
-       res.status(500).send({ message: "Internal server error" });
-     }
-   });
+        if (!result || result.length === 0) {
+          return res.status(404).send({ message: "No data found" });
+        }
 
-
-
-
-
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).send({ message: "Internal server error" });
+      }
+    });
 
     // donation status update
     app.patch("/donations/:id", async (req, res) => {
@@ -428,6 +420,54 @@ async function run() {
       res.send(result);
     });
 
+    // blogs related works
+
+    // all blogs for admin
+    app.get("/blogs", async (req, res) => {
+      try {
+        const result = await bloodCallectionBlogs.find({}).toArray();
+
+        if (!result || result.length === 0) {
+          return res.status(404).send({ message: "No users found" });
+        }
+
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).send({ message: "Internal server error" });
+      }
+    });
+
+    // blogs status update
+    app.patch("/blogs/:id", async (req, res) => {
+      try {
+        const { id } = req.params;
+        const { status } = req.body; // The new status coming from the request body
+        
+
+        // Check if the ObjectId is valid
+        if (!ObjectId.isValid(id)) {
+          return res.status(400).send({ message: "Invalid ID format" });
+        }
+
+        // Update the blog status in the database
+        const result = await bloodCallectionBlogs.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { status } }
+        );
+
+        if (result.modifiedCount === 0) {
+          return res
+            .status(404)
+            .send({ message: "Blog not found or status is the same" });
+        }
+
+        res.status(200).send(result); // Send back the result
+      } catch (error) {
+        console.error("Error updating status:", error);
+        res.status(500).send({ message: "Failed to update blog status" });
+      }
+    });
 
 
     // blogs post
@@ -437,7 +477,6 @@ async function run() {
       const result = await bloodCallectionBlogs.insertOne(newData);
       res.send(result);
     });
-
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
@@ -453,4 +492,3 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`blood donations is running on port ${port}`);
 });
-
