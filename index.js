@@ -438,6 +438,26 @@ async function run() {
       }
     });
 
+
+    // status based blogs
+    app.get("/blogs/status", async (req, res) => {
+      try {
+        // Filter blogs with status "published"
+        const result = await bloodCallectionBlogs
+          .find({ status: "published" })
+          .toArray();
+
+        if (!result || result.length === 0) {
+          return res.status(404).send({ message: "No published blogs found" });
+        }
+
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching blogs:", error);
+        res.status(500).send({ message: "Internal server error" });
+      }
+    });
+
     // blogs status update
     app.patch("/blogs/:id", async (req, res) => {
       try {
@@ -493,6 +513,22 @@ async function run() {
       } catch (error) {
         console.error("Error deleting blog:", error);
         res.status(500).send({ message: "Failed to delete blog" });
+      }
+    });
+
+    // blogs details
+    app.get("/blogs/details/:id", async (req, res) => {
+      try {
+        const { id } = req.params;
+        const donation = await bloodCallectionBlogs.findOne({
+          _id: new ObjectId(id),
+        });
+        if (!donation) {
+          return res.status(404).send({ message: "Blogs not found" });
+        }
+        res.status(200).send(donation);
+      } catch (error) {
+        res.status(500).send({ message: "Failed to fetch Blogs details" });
       }
     });
 
