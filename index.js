@@ -335,6 +335,34 @@ async function run() {
       }
     });
 
+    // donations search
+    app.get("/all-donations/filter", async (req, res) => {
+      const { district, bloodGroup } = req.query;
+      
+      try {
+        const query = {};
+        query["$or"] = [];
+        if (district) query["$or"].push({ district });
+        if (bloodGroup) query["$or"].push({ bloodGroup });
+
+        // console.log("Filter Query:", query);
+
+        const filteredDonations = await bloodCallectionDonation
+          .find(query)
+          .toArray();
+
+        // console.log(filteredDonations);
+        // if (filteredDonations.length === 0) {
+        //   return res.status(404).send({ message: "No Data Found" });
+        // }
+
+        res.status(200).send(filteredDonations);
+      } catch (error) {
+        console.error("Error fetching donations:", error);
+        res.status(500).send({ message: "Internal server error" });
+      }
+    });
+
     // donations delete
     app.delete("/donations/:id", async (req, res) => {
       try {
@@ -438,7 +466,6 @@ async function run() {
       }
     });
 
-
     // status based blogs
     app.get("/blogs/status", async (req, res) => {
       try {
@@ -463,7 +490,6 @@ async function run() {
       try {
         const { id } = req.params;
         const { status } = req.body; // The new status coming from the request body
-        
 
         // Check if the ObjectId is valid
         if (!ObjectId.isValid(id)) {
@@ -488,7 +514,6 @@ async function run() {
         res.status(500).send({ message: "Failed to update blog status" });
       }
     });
-
 
     // blogs delete
     app.delete("/blogs/:id", async (req, res) => {
