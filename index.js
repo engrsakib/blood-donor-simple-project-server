@@ -336,15 +336,22 @@ async function run() {
     });
 
     // donations search
-    app.get("/all-donations/filter", async (req, res) => {
-      const { district, bloodGroup } = req.query;
-      
+    app.post("/all-donations/filter", async (req, res) => {
+      const { district, bloodGroup } = req.body;
+
       try {
         const query = {};
-        query["$or"] = [];
-        if (district) query["$or"].push({ district });
-        if (bloodGroup) query["$or"].push({ bloodGroup });
+        // query["$or"] = [];
+        // if (district) query["$or"].push({ district });
+        // if (bloodGroup) query["$or"].push({ bloodGroup });
 
+        if (district) {
+          query.district = district;
+        }
+        if (bloodGroup) {
+          query.bloodGroup = bloodGroup;
+        }
+        query.status = "pending";
         // console.log("Filter Query:", query);
 
         const filteredDonations = await bloodCallectionDonation
