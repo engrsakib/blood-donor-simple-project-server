@@ -5,6 +5,7 @@ const app = express();
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const stripe = require("stripe")(process.env.PAYMENT_SECRET);
 const port = process.env.PORT || 5000;
 //
 
@@ -74,6 +75,9 @@ async function run() {
     const bloodCallectionBlogs = client
       .db("bloodCallections")
       .collection("blogs");
+    const bloodCallectionFund = client
+      .db("bloodCallections")
+      .collection("funds");
 
     // user related query
     // get users
@@ -452,7 +456,7 @@ async function run() {
       const newData = req.body;
       // console.log(newUser);
       const result = await bloodCallectionDonation.insertOne(newData);
-      res.send(result);
+      res.status(200).send(result);
     });
 
     // blogs related works
@@ -569,7 +573,31 @@ async function run() {
       const newData = req.body;
       // console.log(newUser);
       const result = await bloodCallectionBlogs.insertOne(newData);
-      res.send(result);
+      res.status(200).send(result);
+    });
+
+    // funding related works
+
+    // create payment intent
+    app.post("/create-payment-intent", async (req, res) => {
+      const { amount } = req.body;
+      // console.log(amount, email, name);
+      const cent = amount * 100;
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: cent,
+        currency: "usd",
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+      res.status(200).send(paymentIntent.client_secret);
+    });
+
+    // fund post
+    app.post("/users/add-fund", async (req, res) => {
+      const newData = req.body;
+      const result = await bloodCallectionFund.insertOne(newData);
+      res.status(200).send(result);
     });
   } finally {
     // Ensures that the client will close when you finish/error
