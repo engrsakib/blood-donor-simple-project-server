@@ -341,7 +341,7 @@ async function run() {
 
     // donations search
     app.post("/all-donations/filter", async (req, res) => {
-      const { district, bloodGroup } = req.body;
+      const { district, bloodGroup, upazila } = req.body;
 
       try {
         const query = {};
@@ -355,10 +355,13 @@ async function run() {
         if (bloodGroup) {
           query.bloodGroup = bloodGroup;
         }
-        query.status = "pending";
+
+        if (upazila) {
+          query.upazila = upazila;
+        }
         // console.log("Filter Query:", query);
 
-        const filteredDonations = await bloodCallectionDonation
+        const filteredDonations = await bloodCallectionUser
           .find(query)
           .toArray();
 
