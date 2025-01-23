@@ -12,7 +12,10 @@ const port = process.env.PORT || 5000;
 //middleware
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://engrsakib-lost-finds.surge.sh"], // Replace with your React app's URL
+    origin: [
+      "http://localhost:5173",
+      "https://engrsakib-blood-donations.surge.sh",
+    ], // Replace with your React app's URL
     credentials: true, // Allow credentials (cookies)
   })
 );
