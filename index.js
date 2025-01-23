@@ -596,6 +596,39 @@ async function run() {
       res.status(200).send(paymentIntent.client_secret);
     });
 
+    // get all fund
+    app.get("/users/add-fund/all", async (req, res) => {
+      try {
+        const result = await bloodCallectionFund.find().toArray();
+        // console.log(result)
+        if (!result || result.length === 0) {
+          return res.status(404).send({ message: "No data found" });
+        }
+
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).send({ message: "Internal server error" });
+      }
+    });
+    app.get("/users/add-fund/all/tk", async (req, res) => {
+      try {
+        const result = await bloodCallectionFund.find().toArray();
+        // console.log(result)
+        if (!result || result.length === 0) {
+          return res.status(404).send({ message: "No data found" });
+        }
+        let total = 0;
+        result.forEach((element) => {
+          total += element.amount;
+        });
+        res.send({ total });
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).send({ message: "Internal server error" });
+      }
+    });
+
     // fund post
     app.post("/users/add-fund", async (req, res) => {
       const newData = req.body;
