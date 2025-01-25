@@ -254,7 +254,7 @@ async function run() {
         const result = await bloodCallectionDonation.find({}).toArray();
 
         if (!result || result.length === 0) {
-          return res.status(404).send({ message: "No data found" });
+          return res.status(204).send({ message: "No data found" });
         }
 
         res.send(result);
@@ -274,7 +274,7 @@ async function run() {
 
         if (!result || result.length === 0) {
           return res
-            .status(404)
+            .status(204)
             .send({ message: "No data found for this user" });
         }
 
@@ -298,7 +298,7 @@ async function run() {
 
         if (!result || result.length === 0) {
           return res
-            .status(404)
+            .status(204)
             .send({ message: "No pending data found for this user" });
         }
 
@@ -317,7 +317,7 @@ async function run() {
           .toArray();
 
         if (!result || result.length === 0) {
-          return res.status(404).send({ message: "No data found" });
+          return res.status(204).send({ message: "No data found" });
         }
 
         res.send(result);
@@ -605,7 +605,7 @@ async function run() {
         const result = await bloodCallectionFund.find().toArray();
         // console.log(result)
         if (!result || result.length === 0) {
-          return res.status(404).send({ message: "No data found" });
+          return res.status(204).send({ message: "No data found" });
         }
 
         res.send(result);
@@ -619,7 +619,7 @@ async function run() {
         const result = await bloodCallectionFund.find().toArray();
         // console.log(result)
         if (!result || result.length === 0) {
-          return res.status(404).send({ message: "No data found" });
+          return res.status(204).send({ message: "No data found" });
         }
         let total = 0;
         result.forEach((element) => {
