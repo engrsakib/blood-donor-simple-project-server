@@ -128,7 +128,7 @@ A comprehensive platform designed for community welfare and fundraising, enablin
 - Avoid CORS/404/504 errors on production.
 
 ## Live Site
-[Visit BloodBridge](https://sakib-welfare-champine.netlify.app/)
+[Visit BloodBridge](https://engrsakib-blood-donations-project.netlify.app/)
 
 ## GitHub Repositories
 - **Server Repository:** [server-side-engrsakib](https://github.com/engrsakib/blood-donor-simple-project-server)
@@ -137,7 +137,7 @@ A comprehensive platform designed for community welfare and fundraising, enablin
 ## How to Run the Server
 1. Clone the repository:
    ```bash
-   git clone https://github.com/engrsakib/blood-donor-simple-project-client-side
+   git clone https://github.com/engrsakib/blood-donor-simple-project-server
    
    ```
 2. Install dependencies:
