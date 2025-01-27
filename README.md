@@ -131,14 +131,14 @@ A comprehensive platform designed for community welfare and fundraising, enablin
 [Visit BloodBridge](https://sakib-welfare-champine.netlify.app/)
 
 ## GitHub Repositories
-- **Server Repository:** [server-side-engrsakib](https://github.com/Programming-Hero-Web-Course4/b10a12-server-side-engrsakib)
-- **Client Repository:** [client-side-engrsakib](https://github.com/Programming-Hero-Web-Course4/b10a12-client-side-engrsakib)
+- **Server Repository:** [server-side-engrsakib](https://github.com/engrsakib/blood-donor-simple-project-server)
+- **Client Repository:** [client-side-engrsakib](https://github.com/engrsakib/blood-donor-simple-project-client-side)
 
 ## How to Run the Server
 1. Clone the repository:
    ```bash
-   git clone https://github.com/engrsakib/sakib-welfare-champine-server-side.git
-   cd sakib-welfare-champine-server-side
+   git clone https://github.com/engrsakib/blood-donor-simple-project-client-side
+   
    ```
 2. Install dependencies:
    ```bash
